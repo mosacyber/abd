@@ -23,7 +23,7 @@ export function wrapArabicText(
         continue;
       }
 
-      const words = paragraph.trim().split(' ').reverse();
+      const words = paragraph.trim().split(' ');
       let currentLine = '';
       
       for (const word of words) {
@@ -64,5 +64,6 @@ export function wrapArabicText(
     return !(line.trim() === '' && lines[index + 1]?.trim() === '');
   });
   
+  // إصلاح ترتيب الأسطر للحفاظ على الترتيب الصحيح للنص العربي
   return { lines: cleanedLines, fontSize };
 }

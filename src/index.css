@@ -23,3 +23,86 @@
 .animate-bounce-in {
   animation: bounceIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
+
+/* New Gradient Background */
+body {
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+}
+
+/* Card Styling */
+.card {
+  @apply bg-white rounded-xl shadow-lg overflow-hidden;
+  transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+}
+
+/* Button Styling */
+.btn-primary {
+  @apply bg-blue-600 text-white px-6 py-2 rounded-lg font-medium;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-primary:hover {
+  @apply bg-blue-700 shadow-md;
+}
+
+.btn-secondary {
+  @apply bg-gray-100 text-gray-700 px-6 py-2 rounded-lg font-medium;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-secondary:hover {
+  @apply bg-gray-200 shadow-md;
+}
+
+/* Input Styling */
+.input-field {
+  @apply w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+  transition: all 0.2s ease-in-out;
+}
+
+.input-field:focus {
+  @apply shadow-sm;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-400 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-500;
+}
+
+/* Animation for Form Elements */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.4s ease-out;
+}
+
+/* Responsive Grid Layout */
+.grid-responsive {
+  @apply grid gap-6;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}

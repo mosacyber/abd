@@ -3,6 +3,45 @@ import { calculateFontSize } from './textUtils';
 import { defaultTextStyle, fixedTextStyle, blackTextStyle, textBoxConfigs } from '../config/textBoxes';
 import { wrapArabicText } from './textHandling';
 
+// وظيفة خاصة لرسم نص الأهداف
+function drawObjectivesText(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  style: TextStyle
+) {
+  const padding = 15;
+  const availableWidth = width - (padding * 2);
+  const availableHeight = height - (padding * 2);
+  const lineHeightRatio = 1.3;
+  const initialFontSize = 24;
+
+  const { lines, fontSize } = wrapArabicText(
+    ctx,
+    text,
+    availableWidth,
+    availableHeight,
+    lineHeightRatio,
+    initialFontSize
+  );
+
+  ctx.font = `${fontSize}px Rubik`;
+  ctx.fillStyle = style.color;
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'top';
+
+  const lineHeight = fontSize * lineHeightRatio;
+  lines.forEach((line, index) => {
+    if (line.trim()) {
+      const yPosition = y + padding + (index * lineHeight);
+      ctx.fillText(line, x + width - padding, yPosition);
+    }
+  });
+}
+
 export function drawTextBox(
   ctx: CanvasRenderingContext2D,
   config: TextBoxConfig,
@@ -22,11 +61,17 @@ export function drawTextBox(
     textStyle = { ...textStyle, color: '#ffffff' };
   }
 
-  // تحديد ما إذا كان النص يحتاج إلى تقسيم (للنصوص الطويلة)
-  const needsWrapping = text.length > 50 || config === textBoxConfigs.objectives;
+  // إذا كان النص هو نص الأهداف، استخدم وظيفة drawObjectivesText
+  if (config === textBoxConfigs.objectives) {
+    drawObjectivesText(ctx, text, x, y, width, height, textStyle);
+    return;
+  }
+
+  // معالجة النصوص الأخرى بشكل عادي
+  const needsWrapping = text.length > 50;
   
   if (needsWrapping) {
-    const initialFontSize = config === textBoxConfigs.objectives ? 24 : 20;
+    const initialFontSize = 20;
     const lineHeightRatio = 1.3;
     const padding = 15;
     
@@ -55,7 +100,7 @@ export function drawTextBox(
       }
     });
   } else {
-    // معالجة النصوص القصيرة كما هي
+    // معالجة النصوص القصيرة
     const fontSize = fixed ? textStyle.fontSize : calculateFontSize(ctx, text, width - 20, height - 10, textStyle.fontSize);
     ctx.font = `${fontSize}px Rubik`;
     ctx.fillStyle = textStyle.color;

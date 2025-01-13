@@ -17,6 +17,8 @@ import { downloadCanvasImage } from './utils/imageUtils';
 import { downloadCanvasAsPdf } from './utils/pdfUtils';
 import { printCanvasImage } from './utils/printUtils';
 import { validateForm } from './utils/validation';
+import { Menu, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function App() {
   const [schoolName, setSchoolName] = useState('');
@@ -34,6 +36,7 @@ export default function App() {
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [showNotification, setShowNotification] = useState(false);
   const [showSuccessNotification, setShowSuccessNotification] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imageUrl = 'https://i.ibb.co/YQF7fjb/55555.jpg';
@@ -91,135 +94,168 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 lg:p-8">
-      <div className="max-w-[1600px] mx-auto">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Form Section */}
-          <div className="lg:w-1/2 order-1 lg:order-2">
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h1 className="text-2xl font-bold mb-4 text-gray-800">إضافة النصوص على الصورة</h1>
-              
-              <RegionSelect 
-                value={region}
-                onChange={(newRegion) => {
-                  setRegion(newRegion);
-                  setEducationOffice('');
-                }}
-              />
+    <div className="min-h-screen flex">
+      {/* Sidebar Toggle Button */}
+      <button
+        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+        className="fixed top-4 left-4 z-[100] p-2 bg-blue-600 text-white rounded-lg shadow-lg hover:bg-blue-700 transition-colors"
+      >
+        {isSidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+      </button>
 
-              {isCustomOffice ? (
-                <EducationOfficeInput
-                  value={educationOffice}
-                  onChange={setEducationOffice}
-                  onBack={() => setIsCustomOffice(false)}
-                />
-              ) : (
-                <EducationOfficeSelect
-                  value={educationOffice}
-                  onChange={setEducationOffice}
-                  region={region}
-                  onCustomClick={() => setIsCustomOffice(true)}
-                />
-              )}
-
-              <TextInput 
-                value={schoolName}
-                onChange={setSchoolName}
-                placeholder="اكتب اسم المدرسة هنا"
-              />
-
-              <ManagerInput
-                value={managerName}
-                onChange={setManagerName}
-              />
-
-              <TextInput 
-                value={eventName}
-                onChange={setEventName}
-                placeholder="اكتب اسم الفعالية هنا"
-              />
-
-              <TextInput 
-                value={executor}
-                onChange={setExecutor}
-                placeholder="اكتب اسم المنفذ هنا"
-              />
-
-              <TextInput 
-                value={location}
-                onChange={setLocation}
-                placeholder="اكتب مكان التنفيذ هنا"
-              />
-
-              <TextInput 
-                value={target}
-                onChange={setTarget}
-                placeholder="اكتب المستهدفون هنا"
-              />
-
-              <TextInput 
-                value={targetCount}
-                onChange={setTargetCount}
-                placeholder="عدد المستهدفون"
-                type="number"
-              />
-
-              <DateInput 
-                value={executionDate}
-                onChange={setExecutionDate}
-                placeholder="تاريخ التنفيذ"
-              />
-
-              <TextInput 
-                value={objectives}
-                onChange={setObjectives}
-                placeholder="الأهداف"
-                multiline={true}
-              />
-
-              <ImageUpload 
-                onImagesChange={setUploadedImages} 
-                maxImages={4}
-                onLimitExceeded={handleImageLimitExceeded}
-              />
-
-              <div className="flex flex-col gap-2">
-                <DownloadButton onDownload={handleDownload} disabled={!isFormValid} />
-                <PdfButton onDownloadPdf={handleDownloadPdf} disabled={!isFormValid} />
-                <PrintButton onPrint={handlePrint} disabled={!isFormValid} />
-              </div>
-            </div>
-          </div>
-
-          {/* Preview Section */}
-          <div className="lg:w-1/2 order-2 lg:order-1">
-            <div className="bg-white p-6 rounded-lg shadow-md sticky top-8">
-              <h2 className="text-xl font-bold mb-4 text-gray-800">معاينة</h2>
-              <div className="relative">
-                <FormValidationOverlay show={!isFormValid} />
-                <ImageCanvas
-                  ref={canvasRef}
-                  imageUrl={imageUrl}
-                  schoolName={schoolName}
-                  region={region}
-                  educationOffice={educationOffice}
-                  managerName={managerName}
-                  eventName={eventName}
-                  executor={executor}
-                  location={location}
-                  target={target}
-                  targetCount={targetCount}
-                  executionDate={executionDate}
-                  objectives={objectives}
-                  uploadedImages={uploadedImages}
-                />
-              </div>
-            </div>
-          </div>
+      {/* Sidebar */}
+      <div className={`fixed inset-y-0 left-0 w-64 bg-blue-800 text-white p-4 transform transition-transform duration-300 z-[99] ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="flex items-center gap-2 mb-8">
+          <h2 className="text-xl font-bold">صمم الشاهد</h2>
         </div>
+        <nav>
+          <Link 
+            to="/" 
+            className="flex items-center gap-2 p-2 hover:bg-blue-700 rounded-lg transition-colors"
+          >
+            الصفحة الرئيسية
+          </Link>
+        </nav>
+      </div>
 
-        <div className="text-center mt-8 text-sm text-gray-600">
-          تم تطويره من قبل موسى بارقي 2025
+      {/* Main Content */}
+      <div className="flex-1 p-8 bg-gray-50">
+        <div className="max-w-[1600px] mx-auto">
+          {/* Top Bar */}
+          <div className="bg-white p-4 rounded-lg shadow-md mb-8">
+            <h1 className="text-2xl font-bold text-gray-800">صمم الشاهد</h1>
+          </div>
+
+          <div className="grid-responsive gap-8">
+            {/* Form Section */}
+            <div className="card animate-slide-in">
+              <div className="p-8">
+                <div className="space-y-6">
+                  <RegionSelect 
+                    value={region}
+                    onChange={(newRegion) => {
+                      setRegion(newRegion);
+                      setEducationOffice('');
+                    }}
+                  />
+
+                  {isCustomOffice ? (
+                    <EducationOfficeInput
+                      value={educationOffice}
+                      onChange={setEducationOffice}
+                      onBack={() => setIsCustomOffice(false)}
+                    />
+                  ) : (
+                    <EducationOfficeSelect
+                      value={educationOffice}
+                      onChange={setEducationOffice}
+                      region={region}
+                      onCustomClick={() => setIsCustomOffice(true)}
+                    />
+                  )}
+
+                  <TextInput 
+                    value={schoolName}
+                    onChange={setSchoolName}
+                    placeholder="اكتب اسم المدرسة هنا"
+                  />
+
+                  <ManagerInput
+                    value={managerName}
+                    onChange={setManagerName}
+                  />
+
+                  <TextInput 
+                    value={eventName}
+                    onChange={setEventName}
+                    placeholder="اكتب اسم الفعالية هنا"
+                  />
+
+                  <TextInput 
+                    value={executor}
+                    onChange={setExecutor}
+                    placeholder="اكتب اسم المنفذ هنا"
+                  />
+
+                  <TextInput 
+                    value={location}
+                    onChange={setLocation}
+                    placeholder="اكتب مكان التنفيذ هنا"
+                  />
+
+                  <TextInput 
+                    value={target}
+                    onChange={setTarget}
+                    placeholder="اكتب المستهدفون هنا"
+                  />
+
+                  <TextInput 
+                    value={targetCount}
+                    onChange={setTargetCount}
+                    placeholder="عدد المستهدفون"
+                    type="number"
+                  />
+
+                  <DateInput 
+                    value={executionDate}
+                    onChange={setExecutionDate}
+                    placeholder="تاريخ التنفيذ"
+                  />
+
+                  <TextInput 
+                    value={objectives}
+                    onChange={setObjectives}
+                    placeholder="الأهداف"
+                    multiline={true}
+                  />
+
+                  <ImageUpload 
+                    onImagesChange={setUploadedImages} 
+                    maxImages={4}
+                    onLimitExceeded={handleImageLimitExceeded}
+                  />
+
+                  <div className="flex flex-col gap-4">
+                    <DownloadButton onDownload={handleDownload} disabled={!isFormValid} />
+                    <PdfButton onDownloadPdf={handleDownloadPdf} disabled={!isFormValid} />
+                    <PrintButton onPrint={handlePrint} disabled={!isFormValid} />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Preview Section */}
+            <div className="card animate-slide-in">
+              <div className="p-8">
+                <h2 className="text-xl font-bold mb-6 text-gray-800 text-center">
+                  معاينة النتيجة
+                </h2>
+                <div className="relative">
+                  <FormValidationOverlay show={!isFormValid} />
+                  <ImageCanvas
+                    ref={canvasRef}
+                    imageUrl={imageUrl}
+                    schoolName={schoolName}
+                    region={region}
+                    educationOffice={educationOffice}
+                    managerName={managerName}
+                    eventName={eventName}
+                    executor={executor}
+                    location={location}
+                    target={target}
+                    targetCount={targetCount}
+                    executionDate={executionDate}
+                    objectives={objectives}
+                    uploadedImages={uploadedImages}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center mt-8 text-sm text-gray-600">
+            تم تطويره من قبل موسى بارقي 2025
+          </div>
         </div>
       </div>
 
